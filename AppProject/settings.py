@@ -129,6 +129,4 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR,'Templates/Static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ROLEPERMISSIONS_MODULE = "Usuario.roles"
-
-AUTH_USER_MODEL = 'AppProject.CustomUser'
+AUTH_USER_MODEL = 'Usuario.CustomUser'
