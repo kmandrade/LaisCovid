@@ -16,6 +16,11 @@ from rolepermissions.roles import get_user_roles
 from datetime import date, timedelta
 from datetime import datetime
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+
+
+
 
 def sincronizar_grupos_atendimento(grupos_xml):
     for nome_grupo in grupos_xml:
@@ -125,23 +130,27 @@ def login(request):
         cpf = request.POST.get('cpf')
         senha = request.POST.get('password')
 
-        user = authenticate(cpf=cpf, password=senha)
-        if user:
+        user = authenticate(request, cpf=cpf, password=senha)
+        print("===========")
+        print(user)
+        if user is not None:
             login_django(request, user)
-            userEncontrado = CustomUser.objects.filter(cpf=request.user.cpf).first()
+            userEncontrado = CustomUser.objects.filter(cpf=user.cpf).first()
+            print("===========")
+            print(userEncontrado)
+            print("===========")
+
             roleAdmin = has_permission(userEncontrado, 'SuperAdmin')
-            roles = get_user_roles(userEncontrado)
-            print("=====================")
-            print(userEncontrado.get_idade())
-            print("=====================")
-            return render(request,'home.html',{'nome_completo': userEncontrado.nome_completo, 'role' : roleAdmin})
+            print(roleAdmin)
+            print(userEncontrado)
+            return render(request, 'home.html', {'user': userEncontrado})
         else:
-            return HttpResponse('Email ou senha inválidos')
+            return HttpResponse('CPF ou senha inválidos')
 
 @login_required(login_url="/auth/login/")
 def home(request):
-        userEncontrado = CustomUser.objects.filter(username=request.user.username).first()
-        return render(request,'home.html',{'nomeUsuario': userEncontrado.username})
+    userEncontrado = CustomUser.objects.filter(username=request.user.cpf).first()
+    return render(request, 'home.html', {'user': userEncontrado})
 
 @login_required(login_url="/auth/login/")
 def logout_view(request):

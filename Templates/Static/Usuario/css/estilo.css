@@ -4,17 +4,25 @@
     padding: 5px;
     border: 1px solid #ccc; /* Borda para o contêiner */
 }
-.input-container {
-    display: flex;
-    align-items: center; /* Alinha verticalmente */
-    justify-content: space-between; /* Distribui o espaço entre os elementos */
+ /* Adicione estilos CSS personalizados aqui */
+ .form-container {
+    max-width: 400px;
+    margin: 3px 48px;
+    width: 100%;
 }
 
+.form-group {
+    margin-bottom: 10px;
+}
+.input-container {
+    display: flex;
+    align-items: flex-end; /* Alinha verticalmente */
+    justify-content: space-between; /* Distribui o espaço entre os elementos */
+}
 .input-container label,
 .input-container input {
     margin-right: 10px; /* Espaço à direita do label e do input */
 }
-
 .error {
     color: red;
     font-size: 0.8em;
@@ -22,7 +30,10 @@
     display: none; /* Inicialmente oculto */
     margin-left: 10px; /* Espaço à esquerda da mensagem de erro */
 }
-
 input:invalid + .error {
     display: inline-flex; /* Mostra a mensagem de erro quando o campo adjacente é inválido */
+}
+.form-title {
+    text-align: center; /* Centraliza o título */
+    margin-bottom: 20px; /* Espaçamento abaixo do título */
 }

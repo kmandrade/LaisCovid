@@ -26,6 +26,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
     # Permitir a adição de grupos de atendimento diretamente no admin
     filter_horizontal = ('grupos_atendimento',)
+    actions = ['delete_selected']
 
 
     def grupos_atendimento_display(self, obj):

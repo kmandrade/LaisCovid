@@ -1,22 +1,30 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'Bootstrap/css/bootstrap.min.css' %}">
     <title>Home</title>
-    <link rel="stylesheet" href="{% static 'produtos/css/style.css'%}">
 </head>
 <body>
-    <h1>ola {{nome_completo}}</h1>
-    <h1>role:  {{role}}</h1>
-
-    <!-- <a href="{% url 'logout' %}">Logout</a>
-    
-    {% if criar_forum %}
-    <a href="">Cadastrar Fórum</a>
-    {% else %}
-        <p>nao é professor</p>
-    {% endif %} -->
+   <header id="headerLogin" class="border-bottom">
+    <!-- Outros elementos do header aqui -->
+    {% if user.is_authenticated %}
+        <div id="user-info">
+            <p>Nome Completo: {{ user.nome_completo }}</p>
+            <p>Data de Nascimento: {{ user.data_nascimento }} ({{ user.get_idade }} anos)</p>
+            <p>CPF: {{ user.cpf }}</p>
+            <p>Apto para Agendamento: {{ user.is_apto_agendamento }}</p>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        </div>
+    {% endif %} 
+   </header>
+    <script type="text/javascript">
+        "{% for message in messages %}"
+            alert("{{ message }}");
+        "{% endfor %}"
+    </script>
 </body>
 </html>

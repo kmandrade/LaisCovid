@@ -68,7 +68,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     cpf = BRCPFField(
         max_length=11,
-        unique=False,
+        unique=True,
         verbose_name='CPF',
         help_text='Esse campo é obrigatório. Máximo de 11 dígitos.',
     )
@@ -77,13 +77,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         'nome completo',
         max_length=150,
         blank=False,
-        unique=True,
+        unique=False,
         error_messages={
             'unique': "Um usuário com este nome completo já existe.",
         },
     )
     data_nascimento = models.DateField(('data de nascimento'))
-    is_apto_agendamento = models.BooleanField(default=False, verbose_name='Ativo')
+    is_apto_agendamento = models.BooleanField(default=False, verbose_name='Apto para agendamento')
     is_active = models.BooleanField(default=True, verbose_name='Ativo')
     is_staff = models.BooleanField(default=False, verbose_name='Faz parte da Administração')
     is_admin = models.BooleanField(default =False, verbose_name=('Administrador'))
@@ -94,8 +94,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'nome_completo'
-    REQUIRED_FIELDS = ['cpf', 'data_nascimento']
+    USERNAME_FIELD = 'cpf'
+    REQUIRED_FIELDS = ['nome_completo', 'data_nascimento']
 
     def get_idade(self):
             data_nascimento = self.data_nascimento
@@ -104,5 +104,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     
     def get_nomes_grupos_atendimento(self):
         return [grupo.nome for grupo in self.grupos_atendimento.all()]
-
 
