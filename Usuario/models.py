@@ -7,6 +7,7 @@ from django.utils.timezone import localtime
 from localflavor.br.models import BRCPFField
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from rolepermissions.roles import assign_role
 
 
 
@@ -25,6 +26,24 @@ class CustomUserManager(BaseUserManager):
 
         user.set_password(password)
         user.save(using = self._db)
+        return user
+    
+    def create_superuser(self, cpf, nome_completo, data_nascimento, password = None,**extra_fields):
+
+        user = self.create_user(
+            nome_completo = nome_completo,
+            data_nascimento=data_nascimento,
+            cpf=cpf,
+            password= password,
+            **extra_fields 
+        )
+
+        user.is_admin = True
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        assign_role(user, 'SuperAdmin')
+
         return user
     
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -54,7 +73,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'cpf'
     REQUIRED_FIELDS = ['nome_completo','data_nascimento']
 
-def get_idade(self):
-        data_nascimento = self.data_nascimento
-        idade = relativedelta(date.today(), data_nascimento).years
-        return idade
+    def get_idade(self):
+            data_nascimento = self.data_nascimento
+            idade = relativedelta(date.today(), data_nascimento).years
+            return idade

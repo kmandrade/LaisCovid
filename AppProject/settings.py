@@ -77,12 +77,8 @@ WSGI_APPLICATION = 'AppProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lais_covid',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -130,3 +126,4 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR,'Templates/Static')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'Usuario.CustomUser'
+ROLEPERMISSIONS_MODULE = "Usuario.roles"
