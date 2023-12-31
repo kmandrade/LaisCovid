@@ -124,8 +124,7 @@ def login(request):
         senha = request.POST.get('password')
 
         user = authenticate(request, cpf=cpf, password=senha)
-        print("===========")
-        print(user)
+        
         if user is not None:
             login_django(request, user)
             userEncontrado = CustomUser.objects.filter(cpf=user.cpf).first()

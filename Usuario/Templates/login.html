@@ -37,7 +37,7 @@
     </header>
     
     {% if messages %}
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-info" role="alert">
         {% for message in messages %}
             {% if message.tags %}<div class="{{ message.tags }}">{{ message }}</div>{% endif %}
         {% endfor %}

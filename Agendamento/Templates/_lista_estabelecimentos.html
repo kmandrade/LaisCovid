@@ -1,0 +1,39 @@
+<section id="main-section" class="sectionHome">
+    <div class="container mt-5">
+        <h2 class="mb-4">Estabelecimentos de Saúde</h2>
+    
+        <form method="get" action="{% url 'lista_estabelecimentos' %}" class="mb-4">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Buscar..." name="q">
+                <select class="form-select" name="filtro">
+                    <option value="nome" selected>Nome do Estabelecimento</option>
+                    <option value="cnes">Código CNES</option>
+                </select>
+                <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
+            </div>
+        </form>
+    
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome do Estabelecimento</th>
+                        <th>Código CNES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estabelecimento in estabelecimentos %}
+                    <tr>
+                        <td>{{ estabelecimento.nome_estabelecimento }}</td>
+                        <td>{{ estabelecimento.codigo_cnes }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">Nenhum estabelecimento encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
