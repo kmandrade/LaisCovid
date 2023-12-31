@@ -7,17 +7,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'Bootstrap/css/bootstrap.min.css' %}">
     <title>Home</title>
+    <style>
+        #user-info {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        #user-info p {
+            margin: 0;
+            line-height: 1.5; /* Ajuste a altura da linha conforme necessário */
+            font-size: 0.9rem; /* Ajuste o tamanho da fonte conforme necessário */
+        }
+        #user-info .btn-logout {
+            display: block; /* Faz o botão ocupar a linha inteira (block level) */
+            margin-left: 280px; /* Espaço acima do botão */
+            width: 70px;
+        }
+    </style>
 </head>
 <body>
    <header id="headerLogin" class="border-bottom">
     <!-- Outros elementos do header aqui -->
     {% if user.is_authenticated %}
-        <div id="user-info">
+        <div id="user-info" class="text-end">
             <p>Nome Completo: {{ user.nome_completo }}</p>
             <p>Data de Nascimento: {{ user.data_nascimento }} ({{ user.get_idade }} anos)</p>
             <p>CPF: {{ user.cpf }}</p>
             <p>Apto para Agendamento: {{ user.is_apto_agendamento }}</p>
-            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            <a href="{% url 'logout' %}" class="btn btn-danger btn-logout">Logout</a>
         </div>
     {% endif %} 
    </header>

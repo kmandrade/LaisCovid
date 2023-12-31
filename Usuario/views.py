@@ -136,21 +136,14 @@ def login(request):
         if user is not None:
             login_django(request, user)
             userEncontrado = CustomUser.objects.filter(cpf=user.cpf).first()
-            print("===========")
-            print(userEncontrado)
-            print("===========")
-
-            roleAdmin = has_permission(userEncontrado, 'SuperAdmin')
-            print(roleAdmin)
-            print(userEncontrado)
+            
             return render(request, 'home.html', {'user': userEncontrado})
         else:
             return HttpResponse('CPF ou senha inválidos')
 
 @login_required(login_url="/auth/login/")
 def home(request):
-    userEncontrado = CustomUser.objects.filter(username=request.user.cpf).first()
-    return render(request, 'home.html', {'user': userEncontrado})
+    return render(request, 'home.html', {'user': request.user})
 
 @login_required(login_url="/auth/login/")
 def logout_view(request):
