@@ -1,0 +1,28 @@
+.scrollbar {
+    max-height: 200px; /* Altura máxima antes da barra de rolagem aparecer */
+    overflow-y: auto; /* Ativa a barra de rolagem vertical */
+    padding: 5px;
+    border: 1px solid #ccc; /* Borda para o contêiner */
+}
+.input-container {
+    display: flex;
+    align-items: center; /* Alinha verticalmente */
+    justify-content: space-between; /* Distribui o espaço entre os elementos */
+}
+
+.input-container label,
+.input-container input {
+    margin-right: 10px; /* Espaço à direita do label e do input */
+}
+
+.error {
+    color: red;
+    font-size: 0.8em;
+    height: 2em;
+    display: none; /* Inicialmente oculto */
+    margin-left: 10px; /* Espaço à esquerda da mensagem de erro */
+}
+
+input:invalid + .error {
+    display: inline-flex; /* Mostra a mensagem de erro quando o campo adjacente é inválido */
+}

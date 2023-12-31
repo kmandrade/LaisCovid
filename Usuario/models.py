@@ -3,9 +3,7 @@ from datetime import date
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from django.utils.timezone import localtime
 from localflavor.br.models import BRCPFField
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from rolepermissions.roles import assign_role
 
@@ -47,7 +45,7 @@ class CustomUserManager(BaseUserManager):
                 user.grupos_atendimento.add(grupo)
             except GrupoAtendimento.DoesNotExist:
                 print(f"Grupo de atendimento não encontrado: {nome_grupo}")
-
+        
         return user
     
     def create_superuser(self, cpf, nome_completo, data_nascimento, password = None):
@@ -85,7 +83,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         },
     )
     data_nascimento = models.DateField(('data de nascimento'))
-    is_apto_agendamento = models.BooleanField(default=True, verbose_name='Ativo')
+    is_apto_agendamento = models.BooleanField(default=False, verbose_name='Ativo')
     is_active = models.BooleanField(default=True, verbose_name='Ativo')
     is_staff = models.BooleanField(default=False, verbose_name='Faz parte da Administração')
     is_admin = models.BooleanField(default =False, verbose_name=('Administrador'))
@@ -103,5 +101,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             data_nascimento = self.data_nascimento
             idade = relativedelta(date.today(), data_nascimento).years
             return idade
+    
+    def get_nomes_grupos_atendimento(self):
+        return [grupo.nome for grupo in self.grupos_atendimento.all()]
 
 

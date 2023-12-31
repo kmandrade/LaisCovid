@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http.response import HttpResponse
-from Usuario.models import CustomUser
-from Usuario.models import GrupoAtendimento
+from Usuario.models import CustomUser, GrupoAtendimento
 import requests
 from xml.etree import ElementTree
 
@@ -15,6 +14,17 @@ from rolepermissions.roles import assign_role
 from rolepermissions.decorators import has_role_decorator, has_permission
 from rolepermissions.roles import get_user_roles
 from datetime import date, timedelta
+from datetime import datetime
+from django.utils import timezone
+
+def sincronizar_grupos_atendimento(grupos_xml):
+    for nome_grupo in grupos_xml:
+        try:
+            grupo = GrupoAtendimento.objects.get(nome=nome_grupo)
+        except GrupoAtendimento.DoesNotExist:
+            # O grupo não existe, crie-o
+            grupo = GrupoAtendimento(nome=nome_grupo, visivel=True, criado_em=timezone.now(), atualizado_em=timezone.now())
+            grupo.save()
 
 def buscar_grupos_atendimento():
     url = "https://selecoes.lais.huol.ufrn.br/media/grupos_atendimento.xml"
@@ -35,6 +45,8 @@ def buscar_grupos_atendimento():
             nome_grupo = grupo.find('nome').text if grupo.find('nome') is not None else "Desconhecido"
             grupos_atendimento.append(nome_grupo)
 
+    sincronizar_grupos_atendimento(grupos_atendimento)
+
     print("Grupos de Atendimento finalizados:", grupos_atendimento)
     return grupos_atendimento
 
@@ -49,12 +61,23 @@ def cadastro(request):
         senha = request.POST.get('password')
         confirmar_senha = request.POST.get('confirm_password')
         nomes_grupos = request.POST.getlist('grupos_atendimento')
+        nascimento = datetime.strptime(data_nascimento, '%d/%m/%Y').date()
+        
+        
+
+        idade = (date.today() - nascimento).days / 365.25
+
+        # Validacoes para estar apto
+        nao_tev_covid_ultimos_30_dias = not teve_covid
+        # Verifica se pertence a algum grupo não permitido
+        grupos_nao_permitidos = ['População Privada de Liberdade', 'Pessoas Acamadas com mais de 80 anos',
+                                 'Pessoas com Deficiência Institucionalizadas','Pessoas ACAMADAS de 80 anos ou mais']
+        pertence_grupo_nao_permitido = any(grupo in grupos_nao_permitidos for grupo in nomes_grupos)
+        # Critério para ser apto a agendamento
+        is_apto = idade >= 18 and nao_tev_covid_ultimos_30_dias and not pertence_grupo_nao_permitido
 
         # Validações
-        hoje = date.today()
-        nascimento = date.fromisoformat(data_nascimento)
-        idade = (hoje - nascimento).days / 365.25
-
+        
         if senha != confirmar_senha:
             messages.error(request, 'A confirmação da senha não corresponde à senha inserida.')
             return redirect('cadastro')
@@ -63,14 +86,30 @@ def cadastro(request):
             messages.error(request, 'Usuário deve ser maior de 18 anos.')
             return redirect('cadastro')
 
+        try:
+            nascimento = datetime.strptime(data_nascimento, '%d/%m/%Y').date()
+            data_nascimento_formatada = nascimento.strftime('%Y-%m-%d')
+        except ValueError:
+            messages.error(request, 'Formato de data inválido.')
+            return redirect('cadastro')
+
         user = CustomUser.objects.create_user(
             cpf=cpf,
             nome_completo=nome_completo,
-            data_nascimento=data_nascimento,
+            data_nascimento=data_nascimento_formatada,
             password=senha,
             teve_covid_ultimos_30_dias=teve_covid,
-            nomes_grupos_atendimento=nomes_grupos
+            is_apto_agendamento=is_apto
         )
+        grupos_objs = []
+        for nome_grupo in nomes_grupos:
+            try:
+                grupo = GrupoAtendimento.objects.get(nome=nome_grupo)
+                grupos_objs.append(grupo)
+            except GrupoAtendimento.DoesNotExist:
+                print(f"Grupo de atendimento não encontrado: {nome_grupo}")
+        
+        user.grupos_atendimento.set(grupos_objs)
 
         messages.success(request, 'Usuário cadastrado com sucesso')
         return redirect('login')
