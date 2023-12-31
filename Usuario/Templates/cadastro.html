@@ -24,6 +24,11 @@
         <br>
         <input type="date" name="data_nascimento" placeholder="Data de Nascimento">
         <br>
+        <input type="password" name="password" placeholder="Senha" required>
+        <br>
+        <input type="password" name="confirm_password" placeholder="Confirme a Senha" required>
+        <br>
+        <br>
         <input type="checkbox" name="teve_covid_ultimos_30_dias"> Teve Covid nos últimos 30 dias
         <br>
         <div class="scrollbar">
@@ -39,6 +44,20 @@
         "{% for message in messages %}"
             alert("{{ message }}");
         "{% endfor %}"
+
+        function validatePassword() {
+            var password = document.getElementsByName('password')[0];
+            var confirm_password = document.getElementsByName('confirm_password')[0];
+
+            if (password.value != confirm_password.value) {
+                alert('A confirmação da senha não corresponde à senha inserida.');
+                return false;
+            }
+            return true;
+        }
+
+    var form = document.getElementsByTagName('form')[0];
+    form.onsubmit = validatePassword;
     </script>
 </body>
 </html>

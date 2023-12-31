@@ -46,12 +46,18 @@ def cadastro(request):
         data_nascimento = request.POST.get('data_nascimento')
         senha = request.POST.get('password')
         teve_covid = request.POST.get('teve_covid_ultimos_30_dias') == 'on'
+        senha = request.POST.get('password')
+        confirmar_senha = request.POST.get('confirm_password')
         nomes_grupos = request.POST.getlist('grupos_atendimento')
 
         # Validações
         hoje = date.today()
         nascimento = date.fromisoformat(data_nascimento)
         idade = (hoje - nascimento).days / 365.25
+
+        if senha != confirmar_senha:
+            messages.error(request, 'A confirmação da senha não corresponde à senha inserida.')
+            return redirect('cadastro')
 
         if idade < 18:
             messages.error(request, 'Usuário deve ser maior de 18 anos.')
