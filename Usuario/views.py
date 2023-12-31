@@ -132,5 +132,7 @@ def login(request):
             
             return render(request, 'home.html', {'user': userEncontrado})
         else:
-            return HttpResponse('CPF ou senha inválidos')
+            messages.error(request, 'Usuario ou senha inválidos.')
+            return redirect('login')
+
 
