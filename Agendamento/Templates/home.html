@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'Agendamento/css/estilo.css' %}">
     <link rel="stylesheet" href="{% static 'Bootstrap/css/bootstrap.min.css' %}">
     <title>Home</title>
     <style>
@@ -15,33 +16,47 @@
         }
         #user-info p {
             margin: 0;
-            line-height: 1.5; /* Ajuste a altura da linha conforme necessário */
-            font-size: 0.9rem; /* Ajuste o tamanho da fonte conforme necessário */
+            line-height: 1.5; 
+            font-size: 0.9rem; 
         }
         #user-info .btn-logout {
-            display: block; /* Faz o botão ocupar a linha inteira (block level) */
-            margin-left: 280px; /* Espaço acima do botão */
+            display: block; 
+            margin-left: 280px;
             width: 70px;
         }
     </style>
-</head>
+</head>  
+
 <body>
-   <header id="headerLogin" class="border-bottom">
+   <header id="headerLogin" class="border-bottom" style="width: 100%;">
     <!-- Outros elementos do header aqui -->
     {% if user.is_authenticated %}
         <div id="user-info" class="text-end">
             <p>Nome Completo: {{ user.nome_completo }}</p>
             <p>Data de Nascimento: {{ user.data_nascimento }} ({{ user.get_idade }} anos)</p>
             <p>CPF: {{ user.cpf }}</p>
-            <p>Apto para Agendamento: {{ user.is_apto_agendamento }}</p>
             <a href="{% url 'logout' %}" class="btn btn-danger btn-logout">Logout</a>
+            {% if user.is_apto_agendamento %}
+                <a href="{% url 'logout' %}" class="btn btn-primary" style="width: 120px;">Realizar Agendamento</a>
+            {% endif %}
         </div>
     {% endif %} 
    </header>
+   <br>
+
+   <section id="main-section" class="sectionHome">
+        <div class="content-box">
+
+        </div>
+    </section>
+
+
+
     <script type="text/javascript">
         "{% for message in messages %}"
             alert("{{ message }}");
         "{% endfor %}"
     </script>
+    <script src="{% static 'Bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

@@ -3,21 +3,14 @@ from django.http.response import HttpResponse
 from Usuario.models import CustomUser, GrupoAtendimento
 import requests
 from xml.etree import ElementTree
-
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
-from rolepermissions.roles import assign_role
-from rolepermissions.decorators import has_role_decorator, has_permission
-from rolepermissions.roles import get_user_roles
-from datetime import date, timedelta
+from datetime import date
 from datetime import datetime
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
+
 
 
 
@@ -141,12 +134,3 @@ def login(request):
         else:
             return HttpResponse('CPF ou senha inválidos')
 
-@login_required(login_url="/auth/login/")
-def home(request):
-    return render(request, 'home.html', {'user': request.user})
-
-@login_required(login_url="/auth/login/")
-def logout_view(request):
-    logout(request)
-    messages.add_message(request, messages.SUCCESS, 'Deslogado com sucesso')
-    return redirect('login')

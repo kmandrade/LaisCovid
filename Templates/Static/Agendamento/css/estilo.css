@@ -1,0 +1,18 @@
+.sectionHome {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px; /* Ajuste a altura conforme necessário */
+    margin-top: 20%; /* Espaço abaixo do header */
+}
+
+.content-box {
+    width: 100px; /* Largura do quadrado */
+    height: 100px; /* Altura do quadrado */
+    background-color: #f0f0f0; /* Cor de fundo do quadrado */
+    border: 1px solid #ccc; /* Borda do quadrado */
+    display: block;
+    clear: both;
+    justify-content: center;
+    align-items: center;
+}
