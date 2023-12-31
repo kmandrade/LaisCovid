@@ -6,17 +6,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
+    <style>
+        .scrollbar {
+            max-height: 200px; /* Altura máxima antes da barra de rolagem aparecer */
+            overflow-y: auto; /* Ativa a barra de rolagem vertical */
+            padding: 5px;
+            border: 1px solid #ccc; /* Borda para o contêiner */
+        }
+    </style>
 </head>
 <body>
 
     <form action="{% url 'cadastro'%}" method="POST">{%csrf_token%}
-        <input type="text" name="userName" placeholder="usuario">
+        <input type="text" name="cpf" placeholder="CPF">
         <br>
-        <input type="email" name="email" placeholder="email">
+        <input type="text" name="nome_completo" placeholder="Nome Completo">
         <br>
-        <input type="password" name="password" placeholder="senha">
+        <input type="date" name="data_nascimento" placeholder="Data de Nascimento">
+        <br>
+        <input type="checkbox" name="teve_covid_ultimos_30_dias"> Teve Covid nos últimos 30 dias
+        <br>
+        <div class="scrollbar">
+            {% for nome_grupo in grupos_atendimento %}
+                <input type="checkbox" name="grupos_atendimento" value="{{ nome_grupo }}"> {{ nome_grupo }}
+                <br>
+            {% endfor %}
+        </div>
         <br>
         <input type="submit">
     </form>
+    <script type="text/javascript">
+        "{% for message in messages %}"
+            alert("{{ message }}");
+        "{% endfor %}"
+    </script>
 </body>
 </html>
