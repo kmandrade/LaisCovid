@@ -35,30 +35,23 @@
                         <th>Status</th>
                         <th>Nome do Estabelecimento</th>
                         <th>Código CNES</th>
-                        <th>Ação</th> <!-- Nova coluna para o botão -->
                     </tr>
                 </thead>
                 <tbody>
-                    {% for agendamento in agendamentos %}
-                    <tr class="{% if not agendamento.disponivel %}table-secondary{% endif %}">
-                        <td>{{ agendamento.data_agendamento }} às {{ agendamento.hora_agendamento }}</td>
-                        <td>{{ agendamento.dia_semana }}</td>
+                    {% for agendamento_usuario in agendamentos_usuario %}
+                    <tr class="{% if agendamento_usuario.agendamento.expirado %}table-secondary{% endif %}">
+                        <td>{{ agendamento_usuario.agendamento.data_agendamento }} às {{ agendamento_usuario.agendamento.hora_agendamento }}</td>
+                        <td>{{ agendamento_usuario.agendamento.dia_semana }}</td>
                         <td>
-                            {% if agendamento.expirado %}
+                            {% if agendamento_usuario.agendamento.expirado %}
                                 Expirado
-                            {% elif not agendamento.disponivel %}
-                                Bloqueado
                             {% else %}
                                 Ativo
                             {% endif %}
                         </td>
-                        <td>{{ agendamento.estabelecimento.nome_estabelecimento }}</td>
-                        <td>{{ agendamento.estabelecimento.codigo_cnes }}</td>
-                        <td>
-                            {% if agendamento.disponivel %}
-                                <a href="{% url 'url_para_realizar_agendamento' agendamento.id %}" class="btn btn-primary btn-sm">Agendar</a>
-                            {% endif %}
-                        </td>
+                        <td>{{ agendamento_usuario.agendamento.estabelecimento.nome_estabelecimento }}</td>
+                        <td>{{ agendamento_usuario.agendamento.estabelecimento.codigo_cnes }}</td>
+                    
                     </tr>
                     {% empty %}
                     <tr>
@@ -66,10 +59,12 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+                
             </table>
         </div>
     </div>
 </section>
+
 
 
 

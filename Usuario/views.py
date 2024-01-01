@@ -127,11 +127,7 @@ def login(request):
         
         if user is not None:
             login_django(request, user)
-            userEncontrado = CustomUser.objects.filter(cpf=user.cpf).first()
-            
-            return render(request, 'home.html', {'user': userEncontrado})
+            return redirect('home')
         else:
-            messages.error(request, 'Usuario ou senha inválidos.')
+            messages.error(request, 'Usuário ou senha inválidos.')
             return redirect('login')
-
-

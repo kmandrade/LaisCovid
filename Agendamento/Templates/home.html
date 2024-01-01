@@ -40,13 +40,15 @@
     <div id="realizarAgendamento" style="display:none;">
         {% include '_realizar_agendamento.html' %}
     </div>
-
-
-    <script type="text/javascript">
-        "{% for message in messages %}"
-            alert("{{ message }}");
-        "{% endfor %}"
-    </script>
+    <br>
+    <br>
+    {% if messages %}
+    <div class="alert alert-info" role="alert">
+        {% for message in messages %}
+            {% if message.tags %}<div class="{{ message.tags }}">{{ message }}</div>{% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     <script src="{% static 'Bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

@@ -10,8 +10,8 @@
                     
                 {% if user.is_apto_agendamento %}
                     <p>Você está apto para realizar agendamentos: </p>
-                    <a id="toggleRealizarAgend" href="{% url 'realizar_agendamento' %}" class="btn btn-agendamento">Realizar Agendamento</a>
-                {% else %}
+                    <button id="toggleRealizarAgend" class="btn btn-primary" data-tem-agendamento-ativo="{% if tem_agendamento_ativo %}true{% else %}false{% endif %}">Realizar Agendamento</button>
+                    {% else %}
                     <p class="nao-apto">Você não está apto para realizar agendamentos.</p>
                 {% endif %}
             </div>

@@ -13,8 +13,17 @@ from django.shortcuts import get_object_or_404
 def home(request):
     usuario = request.user
     estabelecimentos = Estabelecimento.objects.all()
-    print("========")
-    # Processamento do filtro
+    tem_agendamento_ativo = AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True).exists()
+    dias_semana = {
+        'Monday': 'Segunda-feira',
+        'Tuesday': 'Terça-feira',
+        'Wednesday': 'Quarta-feira',
+        'Thursday': 'Quinta-feira',
+        'Friday': 'Sexta-feira',
+        'Saturday': 'Sábado',
+        'Sunday': 'Domingo'
+    }
+
     query = request.GET.get('q')
     filtro = request.GET.get('filtro')
     if query:
@@ -23,19 +32,22 @@ def home(request):
         elif filtro == 'cnes':
             estabelecimentos = estabelecimentos.filter(codigo_cnes__icontains=query)
 
-    selected_estabelecimento_id = request.GET.get('estabelecimento_id')
-    agendamentos = []
-    if selected_estabelecimento_id:
-        agendamentos = Agendamento.objects.filter(estabelecimento_id=selected_estabelecimento_id)
-        for agendamento in agendamentos:
-            agendamento.disponivel = not AgendamentoUsuario.objects.filter(agendamento=agendamento, is_active=True).exists()
+    agendamentos = AgendamentoUsuario.objects.filter(usuario=usuario)
+    for agendamento_usuario in agendamentos:
+        agendamento = agendamento_usuario.agendamento
+        agendamento.expirado = datetime.now() > datetime.combine(agendamento.data_agendamento, agendamento.hora_agendamento)
+        dia_semana_ing = agendamento.data_agendamento.strftime("%A")
+        agendamento.dia_semana = dias_semana.get(dia_semana_ing, dia_semana_ing)
 
     context = {
         'user': usuario,
         'estabelecimentos': estabelecimentos,
-        'agendamentos': agendamentos,
-        'selected_estabelecimento_id': int(selected_estabelecimento_id) if selected_estabelecimento_id else None
+        'agendamentos_usuario': agendamentos,
+        'tem_agendamento_ativo': tem_agendamento_ativo,
     }
+
+    if tem_agendamento_ativo:
+        messages.info(request, "Você já possui um agendamento ativo.")
 
     return render(request, 'home.html', context)
 
