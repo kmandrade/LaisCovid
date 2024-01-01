@@ -1,0 +1,75 @@
+<section id="main-section" class="sectionHome">
+    <div class="container mt-5">
+        <h2 class="mb-4">Agendamentos</h2>
+    
+        <form method="get" action="{% url 'home' %}" class="mb-4">
+            <!-- Filtro por nome ou código CNES -->
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Buscar..." name="q">
+                <select class="form-select" name="filtro">
+                    <option value="nome">Nome do Estabelecimento</option>
+                    <option value="cnes">Código CNES</option>
+                </select>
+                <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
+            </div>
+            
+            <!-- Seleção de estabelecimento -->
+            <div class="input-group mb-3">
+                <select name="estabelecimento_id" class="form-select">
+                    <option value="">Selecione um Estabelecimento</option>
+                    {% for estabelecimento in estabelecimentos %}
+                        <option value="{{ estabelecimento.id }}" {% if selected_estabelecimento_id == estabelecimento.id %} selected {% endif %}>
+                            {{ estabelecimento.nome_estabelecimento }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data e Hora</th>
+                        <th>Dia da Semana</th>
+                        <th>Status</th>
+                        <th>Nome do Estabelecimento</th>
+                        <th>Código CNES</th>
+                        <th>Ação</th> <!-- Nova coluna para o botão -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agendamento in agendamentos %}
+                    <tr class="{% if not agendamento.disponivel %}table-secondary{% endif %}">
+                        <td>{{ agendamento.data_agendamento }} às {{ agendamento.hora_agendamento }}</td>
+                        <td>{{ agendamento.dia_semana }}</td>
+                        <td>
+                            {% if agendamento.expirado %}
+                                Expirado
+                            {% elif not agendamento.disponivel %}
+                                Bloqueado
+                            {% else %}
+                                Ativo
+                            {% endif %}
+                        </td>
+                        <td>{{ agendamento.estabelecimento.nome_estabelecimento }}</td>
+                        <td>{{ agendamento.estabelecimento.codigo_cnes }}</td>
+                        <td>
+                            {% if agendamento.disponivel %}
+                                <a href="{% url 'url_para_realizar_agendamento' agendamento.id %}" class="btn btn-primary btn-sm">Agendar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhum agendamento encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+
+

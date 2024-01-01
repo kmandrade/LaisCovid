@@ -2,7 +2,7 @@ from django.db import models
 from Usuario.models import CustomUser
 from datetime import datetime
 from django.utils.timezone import localtime
-from datetime import date
+from datetime import time
 
 class Estabelecimento(models.Model):
     nome_estabelecimento = models.CharField('Nome do Estabelecimento', max_length=70)
@@ -15,38 +15,32 @@ class Estabelecimento(models.Model):
 class Agendamento(models.Model):
     estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE, verbose_name="Estabelecimento")
     data_agendamento = models.DateField('Data do Agendamento')
+    hora_agendamento = models.TimeField('Hora do Agendamento', default=time(13, 0))
+    vagas_disponiveis = models.IntegerField(default=5)
 
     def __str__(self):
-        return f"Dia {self.data_agendamento}, Estabelecimento: {self.estabelecimento}"
+        return f"{self.data_agendamento} às {self.hora_agendamento} - {self.estabelecimento}"
 
-class AgendamentoCustomUser(models.Model):
+    class Meta:
+        unique_together = ('estabelecimento', 'data_agendamento', 'hora_agendamento')
+
+
+class AgendamentoUsuario(models.Model):
     agendamento = models.ForeignKey(Agendamento, on_delete=models.CASCADE, verbose_name="Agendamento")
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="CPF")
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="Usuário")
     is_active = models.BooleanField(default=False, verbose_name='Agendamento Ativo')
-    hora_agendamento = models.TimeField('Hora do Agendamento')
 
     def __str__(self):
-        return f"Agendamento {self.agendamento}, Candidato:{self.user}, Ativo:{self.is_active}, Hora:{self.hora_agendamento} "
+        return f"Agendamento: {self.agendamento}, Usuário: {self.usuario}, Ativo: {self.is_active}"
 
     def status_agendamento(self):
-        now = datetime.now()
-        agendamento_datetime = datetime.combine(self.agendamento.data_agendamento, self.hora_agendamento)
-        if now > agendamento_datetime:
-            return 'Expirado'
-        else:
-            return 'Ativo'
-
-    def datahora_consulta(self):
-        return f"Sistema acessado às {localtime().time().strftime('%H:%M:%S')} no dia {date.today().strftime('%d/%m/%Y')}"
+        agora = datetime.now()
+        data_hora_agendamento = datetime.combine(self.agendamento.data_agendamento, self.agendamento.hora_agendamento)
+        return 'Expirado' if agora > data_hora_agendamento else 'Ativo'
 
     def dia_semana(self):
+        dias_semana = {0: 'Quarta-Feira', 1: 'Quinta-Feira', 2: 'Sexta-Feira', 3: 'Sábado', 4: 'Domingo'}
+        return dias_semana[self.agendamento.data_agendamento.weekday()]
 
-        dias_semana = {
-                       0: 'Quarta-Feira',
-                       1: 'Quinta-Feira',
-                       2: 'Sexta-Feira',
-                       3: 'Sábado',
-                       4: 'Domingo'}
-
-        dia_agendamento = dias_semana[self.agendamento.data_agendamento.weekday()]
-        return dia_agendamento
+    class Meta:
+        unique_together = ('usuario', 'is_active')

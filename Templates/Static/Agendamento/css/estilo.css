@@ -16,3 +16,31 @@
     justify-content: center;
     align-items: center;
 }
+#headerLogin .btn {
+    width: 180px;
+    height: 40px;
+    display: inline-block;
+    text-align: center;
+    line-height: 40px;
+}
+
+#headerLogin .user-info p {
+    margin: 5px 0;
+}
+
+#headerLogin .btn-logout {
+    background-color: #dc3545;
+    color: white;
+    height: 50px;
+    justify-content: center;
+}
+
+#headerLogin .btn-agendamento {
+    background-color: #007bff;
+    color: white;
+}
+
+#headerLogin .nao-apto {
+    color: #dc3545;
+    font-weight: bold;
+}
