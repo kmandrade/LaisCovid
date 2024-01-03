@@ -11,19 +11,26 @@
             </select>
         </div>
         <div class="mb-3">
-            <label for="data_agendamento" class="form-label">Data:</label>
+            <label id="data_agendamento" for="data_agendamento" class="form-label">Data:</label>
             <input type="date" name="data_agendamento" id="data_agendamento" class="form-control" min="{{ hoje|date:'Y-m-d' }}">
         </div>
         <div class="mb-3">
             <label for="hora_agendamento" class="form-label">Hora:</label>
             <select name="hora_agendamento" id="hora_agendamento" class="form-select">
-                <option value="13:00">13h</option>
-                <option value="14:00">14h</option>
-                <option value="15:00">15h</option>
-                <option value="16:00">16h</option>
-                <option value="17:00">17h</option>
+                {% if request.user.get_idade >= 18 and request.user.get_idade <= 29 %}
+                    <option value="13:00">13h</option>
+                {% elif request.user.get_idade >= 30 and request.user.get_idade <= 39 %}
+                    <option value="14:00">14h</option>
+                {% elif request.user.get_idade >= 40 and request.user.get_idade <= 49 %}
+                    <option value="15:00">15h</option>
+                {% elif request.user.get_idade >= 50 and request.user.get_idade <= 59 %}
+                    <option value="16:00">16h</option>
+                {% else %}
+                    <option value="17:00">17h</option>
+                {% endif %}
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Agendar</button>
     </form>
 </div>
+

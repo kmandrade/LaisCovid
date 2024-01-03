@@ -4,13 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var agendamento = document.getElementById('realizarAgendamento');
 
     botaoRealizarAgendamento.addEventListener('click', function() {
-        var temAgendamentoAtivo = this.getAttribute('data-tem-agendamento-ativo') === 'true';
-        if (temAgendamentoAtivo) {
-            alert("Você já possui um agendamento ativo.");
-        } else {
-            agendamento.style.display = agendamento.style.display === 'none' ? 'block' : 'none';
-            localStorage.setItem('realizarAgendamentosVisivel', agendamento.style.display === 'block');
-        }
+        agendamento.style.display = agendamento.style.display === 'none' ? 'block' : 'none';
+        localStorage.setItem('realizarAgendamentosVisivel', agendamento.style.display === 'block');
     });
 
 
@@ -23,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     localStorage.setItem('listaAgendamentosVisivel', lista.style.display === 'block');
     });
 
+    
 });
     
     

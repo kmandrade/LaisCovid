@@ -13,14 +13,11 @@ from django.utils import timezone
 
 
 
-
-
 def sincronizar_grupos_atendimento(grupos_xml):
     for nome_grupo in grupos_xml:
         try:
             grupo = GrupoAtendimento.objects.get(nome=nome_grupo)
         except GrupoAtendimento.DoesNotExist:
-            # O grupo não existe, crie-o
             grupo = GrupoAtendimento(nome=nome_grupo, visivel=True, criado_em=timezone.now(), atualizado_em=timezone.now())
             grupo.save()
 
@@ -65,16 +62,11 @@ def cadastro(request):
 
         idade = (date.today() - nascimento).days / 365.25
 
-        # Validacoes para estar apto
         nao_tev_covid_ultimos_30_dias = not teve_covid
-        # Verifica se pertence a algum grupo não permitido
         grupos_nao_permitidos = ['População Privada de Liberdade', 'Pessoas Acamadas com mais de 80 anos',
                                  'Pessoas com Deficiência Institucionalizadas','Pessoas ACAMADAS de 80 anos ou mais']
         pertence_grupo_nao_permitido = any(grupo in grupos_nao_permitidos for grupo in nomes_grupos)
-        # Critério para ser apto a agendamento
         is_apto = idade >= 18 and nao_tev_covid_ultimos_30_dias and not pertence_grupo_nao_permitido
-
-        # Validações
         
         if senha != confirmar_senha:
             messages.error(request, 'A confirmação da senha não corresponde à senha inserida.')

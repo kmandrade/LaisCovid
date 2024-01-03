@@ -42,13 +42,9 @@
                     <tr class="{% if agendamento_usuario.agendamento.expirado %}table-secondary{% endif %}">
                         <td>{{ agendamento_usuario.agendamento.data_agendamento }} às {{ agendamento_usuario.agendamento.hora_agendamento }}</td>
                         <td>{{ agendamento_usuario.agendamento.dia_semana }}</td>
-                        <td>
-                            {% if agendamento_usuario.agendamento.expirado %}
-                                Expirado
-                            {% else %}
-                                Ativo
-                            {% endif %}
-                        </td>
+                        
+                        <td>{{ agendamento_usuario.status_agendamento }}</td>
+                        
                         <td>{{ agendamento_usuario.agendamento.estabelecimento.nome_estabelecimento }}</td>
                         <td>{{ agendamento_usuario.agendamento.estabelecimento.codigo_cnes }}</td>
                     

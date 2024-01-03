@@ -33,11 +33,13 @@ class AgendamentoUsuario(models.Model):
     def __str__(self):
         return f"Agendamento: {self.agendamento}, Usuário: {self.usuario}, Ativo: {self.is_active}"
 
+    @property
     def status_agendamento(self):
         agora = datetime.now()
         data_hora_agendamento = datetime.combine(self.agendamento.data_agendamento, self.agendamento.hora_agendamento)
         return 'Expirado' if agora > data_hora_agendamento else 'Ativo'
-
+    
+    @property
     def dia_semana(self):
         dias_semana = {0: 'Quarta-Feira', 1: 'Quinta-Feira', 2: 'Sexta-Feira', 3: 'Sábado', 4: 'Domingo'}
         return dias_semana[self.agendamento.data_agendamento.weekday()]

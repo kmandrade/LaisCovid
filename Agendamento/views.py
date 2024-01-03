@@ -6,6 +6,8 @@ from django.contrib import messages
 from .models import Estabelecimento, AgendamentoUsuario, Agendamento
 from datetime import datetime
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from datetime import timedelta
 
 
 
@@ -13,7 +15,14 @@ from django.shortcuts import get_object_or_404
 def home(request):
     usuario = request.user
     estabelecimentos = Estabelecimento.objects.all()
-    tem_agendamento_ativo = AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True).exists()
+    agendamento_encontrado = AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True)
+
+    tem_agendamento_ativo = False
+    for agendamento in agendamento_encontrado:
+        if agendamento.status_agendamento != "Expirado":
+            tem_agendamento_ativo = True
+            break
+
     dias_semana = {
         'Monday': 'Segunda-feira',
         'Tuesday': 'Terça-feira',
@@ -35,10 +44,10 @@ def home(request):
     agendamentos = AgendamentoUsuario.objects.filter(usuario=usuario)
     for agendamento_usuario in agendamentos:
         agendamento = agendamento_usuario.agendamento
-        agendamento.expirado = datetime.now() > datetime.combine(agendamento.data_agendamento, agendamento.hora_agendamento)
+        agendamento.expirado = agendamento_usuario.status_agendamento == "Expirado"
         dia_semana_ing = agendamento.data_agendamento.strftime("%A")
         agendamento.dia_semana = dias_semana.get(dia_semana_ing, dia_semana_ing)
-
+    
     context = {
         'user': usuario,
         'estabelecimentos': estabelecimentos,
@@ -56,10 +65,6 @@ def home(request):
 def realizar_agendamento(request, agendamento_id=None):
     usuario = request.user
 
-    if AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True).exists():
-        messages.error(request, "Você já possui um agendamento ativo.")
-        return redirect('home')
-
     agendamento_direto = None
     if agendamento_id:
         agendamento_direto = get_object_or_404(Agendamento, id=agendamento_id)
@@ -69,16 +74,28 @@ def realizar_agendamento(request, agendamento_id=None):
 
         if not agendamento:
             estabelecimento_id = request.POST.get('estabelecimento')
-            data_agendamento = request.POST.get('data_agendamento')
+            data_agendamento_str = request.POST.get('data_agendamento')
+            data_agendamento = datetime.strptime(data_agendamento_str, '%Y-%m-%d').date()
             hora_agendamento = request.POST.get('hora_agendamento')
+            dia_da_semana = data_agendamento.weekday()
+
+            if data_agendamento < (timezone.now().date() + timedelta(days=1)):
+                messages.error(request, "Por favor, selecione uma data futura para o agendamento.")
+                return redirect('home')
+            
+            if dia_da_semana < 2 or dia_da_semana > 5:
+                messages.error(request, "Agendamentos são permitidos apenas de quarta a sábado.")
+                return redirect('home')
+
             agendamento, created = Agendamento.objects.get_or_create(
                 estabelecimento_id=estabelecimento_id, 
                 data_agendamento=data_agendamento, 
                 hora_agendamento=hora_agendamento,
-                defaults={'vagas_disponiveis': 5}  # Valor padrão para vagas disponíveis
+                defaults={'vagas_disponiveis': 5} 
             )
 
         if agendamento.vagas_disponiveis > 0:
+            AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True).update(is_active=False)
             AgendamentoUsuario.objects.create(agendamento=agendamento, usuario=usuario, is_active=True)
             agendamento.vagas_disponiveis -= 1
             agendamento.save()
