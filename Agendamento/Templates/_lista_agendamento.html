@@ -1,31 +1,6 @@
 <section id="main-section" class="sectionHome">
     <div class="container mt-5">
         <h2 class="mb-4">Agendamentos</h2>
-    
-        <form method="get" action="{% url 'home' %}" class="mb-4">
-            <!-- Filtro por nome ou código CNES -->
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Buscar..." name="q">
-                <select class="form-select" name="filtro">
-                    <option value="nome">Nome do Estabelecimento</option>
-                    <option value="cnes">Código CNES</option>
-                </select>
-                <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
-            </div>
-            
-            <!-- Seleção de estabelecimento -->
-            <div class="input-group mb-3">
-                <select name="estabelecimento_id" class="form-select">
-                    <option value="">Selecione um Estabelecimento</option>
-                    {% for estabelecimento in estabelecimentos %}
-                        <option value="{{ estabelecimento.id }}" {% if selected_estabelecimento_id == estabelecimento.id %} selected {% endif %}>
-                            {{ estabelecimento.nome_estabelecimento }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-        </form>
-
         <div style="max-height: 400px; overflow-y: auto;">
             <table class="table">
                 <thead>
