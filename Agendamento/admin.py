@@ -4,8 +4,6 @@ from django.urls import path
 from django.shortcuts import render
 from django.db.models import Count
 
-
-
 @admin.register(Estabelecimento)
 class EstabelecimentoAdmin(admin.ModelAdmin):
     list_display = ('nome_estabelecimento', 'codigo_cnes')
@@ -44,10 +42,12 @@ class AgendamentoAdmin(admin.ModelAdmin):
 
 @admin.register(AgendamentoUsuario)
 class AgendamentoUsuarioAdmin(admin.ModelAdmin):
-    list_filter = ('agendamento__estabelecimento', 'usuario', 'is_active',) 
+    list_filter = ('agendamento__estabelecimento', 'usuario', 'is_active',)
     list_display = ('agendamento', 'usuario', 'get_hora_agendamento', 'is_active',)
     search_fields = ('agendamento__estabelecimento__nome_estabelecimento', 'usuario__username',)
-    ordering = ('agendamento__estabelecimento', 'usuario',)  
+    ordering = ('agendamento__estabelecimento', 'usuario',)
+    list_editable = ['is_active'] 
+
 
     def get_hora_agendamento(self, obj):
         return obj.agendamento.hora_agendamento
