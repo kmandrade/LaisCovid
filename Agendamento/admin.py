@@ -25,12 +25,10 @@ class AgendamentoAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     def grafico_view(self, request):
-        # Aqui você vai gerar os dados para o seu gráfico
         context = self.get_grafico_context()
         return render(request, 'grafico_agendamentos.html', context)
 
     def get_grafico_context(self):
-        # Aqui você gera os dados para o gráfico, isso é apenas um exemplo
         agendamentos_por_estabelecimento = (
             Agendamento.objects
             .values('estabelecimento__nome_estabelecimento')

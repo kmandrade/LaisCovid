@@ -105,3 +105,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def get_nomes_grupos_atendimento(self):
         return [grupo.nome for grupo in self.grupos_atendimento.all()]
 
+    def get_user_quantidade_aptos_inaptos(self):
+        aptos = CustomUser.objects.filter(is_apto_agendamento=True).count()
+        inaptos = CustomUser.objects.filter(is_apto_agendamento=False).count()
+        return {'aptos': aptos, 'inaptos': inaptos}
