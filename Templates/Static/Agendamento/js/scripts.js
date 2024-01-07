@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
         agendamento.style.display = agendamento.style.display === 'none' ? 'block' : 'none';
         localStorage.setItem('realizarAgendamentosVisivel', agendamento.style.display === 'block');
     });
-
+    console.log('TESTE TESTE')
 
     var estadoLista = localStorage.getItem('listaAgendamentosVisivel');
     var lista = document.getElementById('listaAgendamentos');

@@ -21,7 +21,7 @@ def home(request):
         if agendamento.status_agendamento != "Expirado":
             tem_agendamento_ativo = True
             break
-
+            
     dias_semana = {
         'Monday': 'Segunda-feira',
         'Tuesday': 'Terça-feira',
@@ -47,6 +47,8 @@ def home(request):
         dia_semana_ing = agendamento.data_agendamento.strftime("%A")
         agendamento.dia_semana = dias_semana.get(dia_semana_ing, dia_semana_ing)
     
+    request.session['agendamentos'] = [agendamento.id for agendamento in agendamentos]
+    
     context = {
         'user': usuario,
         'estabelecimentos': estabelecimentos,
@@ -63,11 +65,15 @@ def home(request):
 @login_required(login_url="/auth/login/")
 def realizar_agendamento(request):
     usuario = request.user
+    query = request.GET.get('q', '')
+    filtro = request.GET.get('filtro', 'nome')
+
+    agendamentos_ids = request.session.get('agendamentos', [])
+    
+    agendamentos_usuario = AgendamentoUsuario.objects.filter(id__in=agendamentos_ids)
     estabelecimentos = Estabelecimento.objects.all()
 
     if request.method == 'GET':
-        query = request.GET.get('q', '')
-        filtro = request.GET.get('filtro', 'nome')
         if filtro == 'nome':
             estabelecimentos = estabelecimentos.filter(nome_estabelecimento__icontains=query)
         elif filtro == 'cnes':
@@ -114,27 +120,13 @@ def realizar_agendamento(request):
     estabelecimentos = Estabelecimento.objects.all()
     context = {
         'estabelecimentos': estabelecimentos,
+        'agendamentos_usuario': agendamentos_usuario,
+        'query': query,
+        'filtro': filtro, 
     }
-
+    
     return render(request, 'home.html', context)
 
-@login_required(login_url="/auth/login/")
-def lista_agendamento(request):
-    query = request.GET.get('q', '')
-    filtro = request.GET.get('filtro', 'nome')
-
-    if filtro == 'cnes':
-        agendamentos = AgendamentoUsuario.objects.filter(agendamento__estabelecimento__codigo_cnes__icontains=query)
-    else:
-        agendamentos = AgendamentoUsuario.objects.filter(agendamento__estabelecimento__nome_estabelecimento__icontains=query)
-
-    for agendamento in agendamentos:
-        agendamento.expirado = datetime.now() > datetime.combine(agendamento.agendamento.data_agendamento, agendamento.agendamento.hora_agendamento)
-
-    context = {
-        'agendamentos': agendamentos
-    }
-    return render(request, 'home.html', context)
 
 @login_required(login_url="/auth/login/")
 def logout_view(request):

@@ -58,7 +58,10 @@ def cadastro(request):
         nomes_grupos = request.POST.getlist('grupos_atendimento')
         nascimento = datetime.strptime(data_nascimento, '%d/%m/%Y').date()
         
-        
+        userEncontrado = CustomUser.objects.get(cpf=cpf)
+        if userEncontrado:
+            messages.error(request, 'Já existe um usuário com este cpf')
+            return redirect('cadastro')
 
         idade = (date.today() - nascimento).days / 365.25
 

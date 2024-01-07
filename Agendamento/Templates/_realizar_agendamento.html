@@ -1,28 +1,21 @@
 <div class="container mt-4">
     <h2>Agendar Exame</h2>
-    <form method="get" action="{% url 'realizar_agendamento' %}" class="mb-4">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Buscar estabelecimento..." name="q">
-            <select class="form-select" name="filtro">
-                <option value="nome">Nome do Estabelecimento</option>
-                <option value="cnes">Código CNES</option>
-            </select>
-            <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
-        </div>
-    </form>
-    <form method="post" action="{% url 'realizar_agendamento' %}" class="mt-3">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="estabelecimento" class="form-label">Estabelecimento:</label>
-            <select name="estabelecimento" id="estabelecimento" class="form-select">
+    <div class="input-group mb-3">
+            <input type="text" class="form-control" id="inputBuscaEstabelecimento" placeholder="Buscar estabelecimento..." name="q" value="{{ query }}">
+            <select name="estabelecimento" id="dropdownEstabelecimento" class="form-select">
                 <option value="">Selecione um Estabelecimento</option>
                 {% for estabelecimento in estabelecimentos %}
-                <option value="{{ estabelecimento.id }}">{{ estabelecimento.nome_estabelecimento }} - CNES: {{ estabelecimento.codigo_cnes }}</option>
+                <option value="{{ estabelecimento.id }}" data-nome="{{ estabelecimento.nome_estabelecimento }}" data-cnes="{{ estabelecimento.codigo_cnes }}">
+                    {{ estabelecimento.nome_estabelecimento }} - CNES: {{ estabelecimento.codigo_cnes }}
+                </option>
                 {% endfor %}
             </select>
-        </div>
+    </div>
+    <form method="post" action="{% url 'realizar_agendamento' %}" class="mt-3">
+        {% csrf_token %}
+        
         <div class="mb-3">
-            <label id="data_agendamento" for="data_agendamento" class="form-label">Data:</label>
+            <label for="data_agendamento" class="form-label">Data:</label>
             <input type="date" name="data_agendamento" id="data_agendamento" class="form-control" min="{{ hoje|date:'Y-m-d' }}">
         </div>
         <div class="mb-3">
@@ -44,4 +37,29 @@
         <button type="submit" class="btn btn-primary">Agendar</button>
     </form>
 </div>
+<script type="text/javascript">
+    document.getElementById('inputBuscaEstabelecimento').addEventListener('input', function(e) {
+        var textoBusca = e.target.value.toLowerCase();
+        var dropdown = document.getElementById('dropdownEstabelecimento');
+        var opcoes = dropdown.options;
+        var encontrado = false;
 
+        for (var i = 1; i < opcoes.length; i++) {
+            var estabelecimento = opcoes[i].getAttribute('data-nome').toLowerCase();
+            
+            if (estabelecimento.includes(textoBusca)) {
+                opcoes[i].style.display = '';
+                if (!encontrado) {
+                    dropdown.value = opcoes[i].value; 
+                    encontrado = true;
+                }
+            } else {
+                opcoes[i].style.display = 'none';
+            }
+        }
+
+        if (!encontrado) {
+            dropdown.value = ''; 
+        }
+    });
+</script>
