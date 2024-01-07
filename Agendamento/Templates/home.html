@@ -11,30 +11,17 @@
 
     <title>Home</title>
     <style>
-        #user-info {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-        }
-        #user-info p {
-            margin: 0;
-            line-height: 1.5; 
-            font-size: 0.9rem; 
-        }
-        #user-info .btn-logout {
-            display: block; 
-            margin-left: 280px;
-            width: 70px;
-        }
+       
     </style>
 </head>  
 
 <body>
-    {% include '_header.html' %}
-   <br>
+    <header id="headerLogin" class="border-bottom" style="width: 100%;">
+        {% include '_header.html' %}
+    </header>
 
    <div id="listaAgendamentos" style="display:block;">
-    {% include '_lista_agendamento.html' %}
+        {% include '_lista_agendamento.html' %}
     </div>
     <br>
     <div id="realizarAgendamento" style="display:block;">

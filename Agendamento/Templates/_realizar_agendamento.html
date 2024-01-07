@@ -1,65 +1,39 @@
 <div class="container mt-4">
     <h2>Agendar Exame</h2>
-    <div class="input-group mb-3">
-            <input type="text" class="form-control" id="inputBuscaEstabelecimento" placeholder="Buscar estabelecimento..." name="q" value="{{ query }}">
-            <select name="estabelecimento" id="dropdownEstabelecimento" class="form-select">
-                <option value="">Selecione um Estabelecimento</option>
-                {% for estabelecimento in estabelecimentos %}
-                <option value="{{ estabelecimento.id }}" data-nome="{{ estabelecimento.nome_estabelecimento }}" data-cnes="{{ estabelecimento.codigo_cnes }}">
-                    {{ estabelecimento.nome_estabelecimento }} - CNES: {{ estabelecimento.codigo_cnes }}
-                </option>
-                {% endfor %}
-            </select>
-    </div>
     <form method="post" action="{% url 'realizar_agendamento' %}" class="mt-3">
-        {% csrf_token %}
-        
-        <div class="mb-3">
-            <label for="data_agendamento" class="form-label">Data:</label>
-            <input type="date" name="data_agendamento" id="data_agendamento" class="form-control" min="{{ hoje|date:'Y-m-d' }}">
+        <div class="input-group mb-3">
+                <input type="text" class="form-control" id="inputBuscaEstabelecimento" placeholder="Buscar estabelecimento..." name="q" value="{{ query }}">
+                <select name="estabelecimento" id="dropdownEstabelecimento" class="form-select">
+                    <option value="">Selecione um Estabelecimento</option>
+                    {% for estabelecimento in estabelecimentos %}
+                    <option value="{{ estabelecimento.id }}" data-nome="{{ estabelecimento.nome_estabelecimento }}" data-cnes="{{ estabelecimento.codigo_cnes }}">
+                        {{ estabelecimento.nome_estabelecimento }} - CNES: {{ estabelecimento.codigo_cnes }}
+                    </option>
+                    {% endfor %}
+                </select>
         </div>
-        <div class="mb-3">
-            <label for="hora_agendamento" class="form-label">Hora:</label>
-            <select name="hora_agendamento" id="hora_agendamento" class="form-select">
-                {% if request.user.get_idade >= 18 and request.user.get_idade <= 29 %}
-                    <option value="13:00">13h</option>
-                {% elif request.user.get_idade >= 30 and request.user.get_idade <= 39 %}
-                    <option value="14:00">14h</option>
-                {% elif request.user.get_idade >= 40 and request.user.get_idade <= 49 %}
-                    <option value="15:00">15h</option>
-                {% elif request.user.get_idade >= 50 and request.user.get_idade <= 59 %}
-                    <option value="16:00">16h</option>
-                {% else %}
-                    <option value="17:00">17h</option>
-                {% endif %}
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Agendar</button>
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="data_agendamento" class="form-label">Data:</label>
+                <input type="date" name="data_agendamento" id="data_agendamento" class="form-control" min="{{ hoje|date:'Y-m-d' }}">
+            </div>
+            <div class="mb-3">
+                <label for="hora_agendamento" class="form-label">Hora:</label>
+                <select name="hora_agendamento" id="hora_agendamento" class="form-select">
+                    {% if request.user.get_idade >= 18 and request.user.get_idade <= 29 %}
+                        <option value="13:00">13h</option>
+                    {% elif request.user.get_idade >= 30 and request.user.get_idade <= 39 %}
+                        <option value="14:00">14h</option>
+                    {% elif request.user.get_idade >= 40 and request.user.get_idade <= 49 %}
+                        <option value="15:00">15h</option>
+                    {% elif request.user.get_idade >= 50 and request.user.get_idade <= 59 %}
+                        <option value="16:00">16h</option>
+                    {% else %}
+                        <option value="17:00">17h</option>
+                    {% endif %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Agendar</button>
     </form>
 </div>
-<script type="text/javascript">
-    document.getElementById('inputBuscaEstabelecimento').addEventListener('input', function(e) {
-        var textoBusca = e.target.value.toLowerCase();
-        var dropdown = document.getElementById('dropdownEstabelecimento');
-        var opcoes = dropdown.options;
-        var encontrado = false;
-
-        for (var i = 1; i < opcoes.length; i++) {
-            var estabelecimento = opcoes[i].getAttribute('data-nome').toLowerCase();
-            
-            if (estabelecimento.includes(textoBusca)) {
-                opcoes[i].style.display = '';
-                if (!encontrado) {
-                    dropdown.value = opcoes[i].value; 
-                    encontrado = true;
-                }
-            } else {
-                opcoes[i].style.display = 'none';
-            }
-        }
-
-        if (!encontrado) {
-            dropdown.value = ''; 
-        }
-    });
-</script>

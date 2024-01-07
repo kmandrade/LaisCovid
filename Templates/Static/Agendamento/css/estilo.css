@@ -1,27 +1,43 @@
+#user-info {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+#user-info p {
+    margin: 0;
+    line-height: 1.5; 
+    font-size: 0.9rem; 
+}
+#user-info .btn-logout {
+    display: block; 
+    margin-left: 280px;
+    width: 70px;
+}
+
 .sectionHome {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 200px; /* Ajuste a altura conforme necessário */
-    margin-top: 20%; /* Espaço abaixo do header */
+    height: 200px; 
+    margin-top: 20%; 
 }
 
 .content-box {
-    width: 100px; /* Largura do quadrado */
-    height: 100px; /* Altura do quadrado */
-    background-color: #f0f0f0; /* Cor de fundo do quadrado */
-    border: 1px solid #ccc; /* Borda do quadrado */
+    width: 100px;
+    height: 100px; 
+    background-color: #f0f0f0; 
+    border: 1px solid #ccc; 
     display: block;
     clear: both;
     justify-content: center;
     align-items: center;
 }
 #headerLogin .btn {
-    width: 180px;
+    width: 240px;
     height: 40px;
     display: inline-block;
     text-align: center;
-    line-height: 40px;
+    line-height: 25px;
 }
 
 #headerLogin .user-info p {
@@ -31,7 +47,7 @@
 #headerLogin .btn-logout {
     background-color: #dc3545;
     color: white;
-    height: 50px;
+    height: 38px;
     justify-content: center;
 }
 
@@ -43,4 +59,21 @@
 #headerLogin .nao-apto {
     color: #dc3545;
     font-weight: bold;
+}
+.btn-logout, #toggleAgendamentos, #toggleRealizarAgend {
+    width: 280px; 
+    margin-top: 5px; 
+}
+
+#user-info p {
+    margin: 0;
+    line-height: 1.5; 
+    font-size: 0.9rem; 
+}
+
+.nao-apto {
+    color: red;
+}
+.apto {
+    color: green;
 }

@@ -57,7 +57,7 @@ def home(request):
     }
 
     if tem_agendamento_ativo:
-        messages.info(request, "Você já possui um agendamento ativo.")
+        messages.error(request, "Você já possui um agendamento ativo.")
 
     return render(request, 'home.html', context)
 
@@ -65,23 +65,17 @@ def home(request):
 @login_required(login_url="/auth/login/")
 def realizar_agendamento(request):
     usuario = request.user
-    query = request.GET.get('q', '')
-    filtro = request.GET.get('filtro', 'nome')
-
-    agendamentos_ids = request.session.get('agendamentos', [])
-    
-    agendamentos_usuario = AgendamentoUsuario.objects.filter(id__in=agendamentos_ids)
     estabelecimentos = Estabelecimento.objects.all()
 
-    if request.method == 'GET':
-        if filtro == 'nome':
-            estabelecimentos = estabelecimentos.filter(nome_estabelecimento__icontains=query)
-        elif filtro == 'cnes':
-            estabelecimentos = estabelecimentos.filter(codigo_cnes__icontains=query)
-    else:
+    if request.method == 'POST':
         estabelecimento_id = request.POST.get('estabelecimento')
         data_agendamento_str = request.POST.get('data_agendamento')
         hora_agendamento = request.POST.get('hora_agendamento')
+
+        if not estabelecimento_id:
+            print(estabelecimento_id)
+            messages.error(request, "Por favor, selecione um estabelecimento válido.")
+            return redirect('home')
 
         try:
             data_agendamento = datetime.strptime(data_agendamento_str, '%Y-%m-%d').date()
@@ -116,17 +110,16 @@ def realizar_agendamento(request):
         else:
             messages.error(request, "Não há vagas disponíveis para este horário.")
             return redirect(reverse('home'))
-
-    estabelecimentos = Estabelecimento.objects.all()
+        
+    agendamentos_ids = request.session.get('agendamentos', [])
+    
+    agendamentos_usuario = AgendamentoUsuario.objects.filter(id__in=agendamentos_ids)
     context = {
         'estabelecimentos': estabelecimentos,
-        'agendamentos_usuario': agendamentos_usuario,
-        'query': query,
-        'filtro': filtro, 
+        'agendamentos_usuario': agendamentos_usuario
     }
     
     return render(request, 'home.html', context)
-
 
 @login_required(login_url="/auth/login/")
 def logout_view(request):
