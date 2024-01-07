@@ -109,3 +109,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         aptos = CustomUser.objects.filter(is_apto_agendamento=True).count()
         inaptos = CustomUser.objects.filter(is_apto_agendamento=False).count()
         return {'aptos': aptos, 'inaptos': inaptos}
+        

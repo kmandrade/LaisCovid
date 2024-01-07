@@ -16,9 +16,7 @@
             <div class="col-md-6 text-end">
                 <a href="{% url 'logout' %}" class="btn btn-logout">Logout</a>
                 <button id="toggleAgendamentos" class="btn btn-secondary">Exibir Lista de Agendamentos</button>
-                {% if user.is_apto_agendamento %}
-                    <button id="toggleRealizarAgend" class="btn btn-primary" data-tem-agendamento-ativo="{% if tem_agendamento_ativo %}true{% else %}false{% endif %}">Realizar Agendamento</button>
-                {% endif %}
+                
             </div>
         </div>
     </div>

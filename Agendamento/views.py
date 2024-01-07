@@ -66,6 +66,11 @@ def home(request):
 def realizar_agendamento(request):
     usuario = request.user
     estabelecimentos = Estabelecimento.objects.all()
+    
+    agendamento_encontrado = AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True)
+    if agendamento_encontrado:
+        messages.error(request, "Você já possui um agendamento ativo.")
+        return redirect('home')
 
     if request.method == 'POST':
         estabelecimento_id = request.POST.get('estabelecimento')
