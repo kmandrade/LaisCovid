@@ -35,9 +35,11 @@ class AgendamentoAdmin(admin.ModelAdmin):
             .annotate(total=Count('id'))
             .order_by('-total')
         )
-        labels = [agendamento['estabelecimento__nome_estabelecimento'] for agendamento in agendamentos_por_estabelecimento]
-        data = [agendamento['total'] for agendamento in agendamentos_por_estabelecimento]
-        return {'labels': labels, 'data': data}
+        nome_estabelecimento = [agendamento['estabelecimento__nome_estabelecimento'] for agendamento in agendamentos_por_estabelecimento]
+        count_agendamentos = [agendamento['total'] for agendamento in agendamentos_por_estabelecimento]
+        print(nome_estabelecimento)
+        print(count_agendamentos)
+        return {'nome_estabelecimento': nome_estabelecimento, 'count_agendamentos': count_agendamentos}
 
 
 @admin.register(AgendamentoUsuario)

@@ -8,9 +8,9 @@
         <canvas id="myChart"></canvas>
     </div>
     <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'pie',
+        var ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+            type: 'pie',//tipo de grafico pizza
             data: {
                 labels: ['Aptos', 'Inaptos'],
                 datasets: [{

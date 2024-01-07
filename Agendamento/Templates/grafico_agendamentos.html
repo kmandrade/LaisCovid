@@ -7,14 +7,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var ctx = document.getElementById('graficoAgendamentos').getContext('2d');
-        var graficoAgendamentos = new Chart(ctx, {
-            type: 'bar',
+        var ctx = document.getElementById('graficoAgendamentos');
+        new Chart(ctx, {
+            type: 'bar',//tipo de grafico barra
             data: {
-                labels: "{{ labels|safe }}",
+                labels: "{{ nome_estabelecimento|safe }}", // Safe não deixa escapar caracteres
                 datasets: [{
                     label: 'Quantidade de Agendamentos',
-                    data: "{{ data|safe }}",
+                    data: "{{ count_agendamentos|safe }}",
                     backgroundColor: 'rgba(0, 123, 255, 0.5)',
                     borderColor: 'rgba(0, 123, 255, 1)',
                     borderWidth: 1
