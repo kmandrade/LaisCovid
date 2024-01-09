@@ -20,9 +20,11 @@ class GrupoAtendimento(models.Model):
     def __str__(self):
         return self.nome
    
+#Definindo como os usuarios serão criados e gerenciados.
 class CustomUserManager(BaseUserManager):
 
-    def create_user(self, nome_completo, data_nascimento, cpf, password=None, teve_covid_ultimos_30_dias=False, nomes_grupos_atendimento=[], **extra_fields):
+    def create_user(self, nome_completo, data_nascimento, cpf, password=None, teve_covid_ultimos_30_dias=False,
+                     nomes_grupos_atendimento=[], **extra_fields):
         
         if not cpf:
             raise ValueError('O campo CPF é obrigatório.')
@@ -63,7 +65,9 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
-    
+
+#Define a estrutura do modelo, definindo cada campo que o usuário terá
+#Ou seja CustomUserManager será usado para criar e gerenciar intâncias de CustomUser
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     cpf = BRCPFField(
@@ -77,10 +81,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         'nome completo',
         max_length=150,
         blank=False,
-        unique=False,
-        error_messages={
-            'unique': "Um usuário com este nome completo já existe.",
-        },
+        unique=False
     )
     data_nascimento = models.DateField(('data de nascimento'))
     is_apto_agendamento = models.BooleanField(default=False, verbose_name='Apto para agendamento')
@@ -92,9 +93,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     grupos_atendimento = models.ManyToManyField(GrupoAtendimento, blank=True)
     teve_covid_ultimos_30_dias = models.BooleanField(default=False)
 
-    objects = CustomUserManager()
+    objects = CustomUserManager()#Aqui eu estou definindo o gerenciador de modelos para usar o CustomUserManager Personalizado
 
-    USERNAME_FIELD = 'cpf'
+    USERNAME_FIELD = 'cpf' #Identificador único para autenticação.
     REQUIRED_FIELDS = ['nome_completo', 'data_nascimento']
 
     def get_idade(self):

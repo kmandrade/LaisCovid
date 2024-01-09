@@ -30,10 +30,11 @@ def buscar_grupos_atendimento():
         print("Erro ao buscar os dados do XML:", e)
         return []
 
-    tree = ElementTree.fromstring(response.content)
+    tree = ElementTree.fromstring(response.content)#Biblioteca para analisar o xml convertendo em um objeto
 
     grupos_atendimento = []
-
+    
+    #laço para percorrer cada bloco de grupoatendimento do xml
     for grupo in tree.findall('grupoatendimento'):
         visivel = grupo.find('visivel')
         if visivel is not None and visivel.text == 'true':
@@ -53,24 +54,25 @@ def cadastro(request):
         data_nascimento = request.POST.get('data_nascimento')
         senha = request.POST.get('password')
         teve_covid = request.POST.get('teve_covid_ultimos_30_dias') == 'on'
-        senha = request.POST.get('password')
         confirmar_senha = request.POST.get('confirm_password')
         nomes_grupos = request.POST.getlist('grupos_atendimento')
         nascimento = datetime.strptime(data_nascimento, '%d/%m/%Y').date()
-        
-        userEncontrado = CustomUser.objects.get(cpf=cpf)
-        if userEncontrado:
-            messages.error(request, 'Já existe um usuário com este cpf')
+
+
+        if not nomes_grupos:
+            messages.error(request, 'Por favor, selecione pelo menos um grupo de atendimento.')
             return redirect('cadastro')
+
+        try:
+            userEncontrado = CustomUser.objects.get(cpf=cpf)
+            if userEncontrado:
+                messages.error(request, 'Já existe um usuário com este cpf')
+                return redirect('cadastro')
+        except CustomUser.DoesNotExist:
+            pass
 
         idade = (date.today() - nascimento).days / 365.25
 
-        nao_tev_covid_ultimos_30_dias = not teve_covid
-        grupos_nao_permitidos = ['População Privada de Liberdade', 'Pessoas Acamadas com mais de 80 anos',
-                                 'Pessoas com Deficiência Institucionalizadas','Pessoas ACAMADAS de 80 anos ou mais']
-        pertence_grupo_nao_permitido = any(grupo in grupos_nao_permitidos for grupo in nomes_grupos)
-        is_apto = idade >= 18 and nao_tev_covid_ultimos_30_dias and not pertence_grupo_nao_permitido
-        
         if senha != confirmar_senha:
             messages.error(request, 'A confirmação da senha não corresponde à senha inserida.')
             return redirect('cadastro')
@@ -85,6 +87,14 @@ def cadastro(request):
         except ValueError:
             messages.error(request, 'Formato de data inválido.')
             return redirect('cadastro')
+
+        nao_tev_covid_ultimos_30_dias = not teve_covid
+        grupos_nao_permitidos = ['População Privada de Liberdade', 'Pessoas Acamadas com mais de 80 anos',
+                                 'Pessoas com Deficiência Institucionalizadas','Pessoas ACAMADAS de 80 anos ou mais']
+        #Percorre todos os nomes_grupos e caso exista um grupo em grupos_nao_permitidos retorna true
+        pertence_grupo_nao_permitido = any(grupo in grupos_nao_permitidos for grupo in nomes_grupos)
+        is_apto = idade >= 18 and nao_tev_covid_ultimos_30_dias and not pertence_grupo_nao_permitido
+        
 
         user = CustomUser.objects.create_user(
             cpf=cpf,

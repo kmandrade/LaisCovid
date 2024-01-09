@@ -28,18 +28,12 @@ class CustomUserAdmin(admin.ModelAdmin):
     filter_horizontal = ('grupos_atendimento',)
     actions = ['delete_selected']
 
-
+    #Exibindo de forma personalizada os grupos de atendimentos associadas ao usuario.
     def grupos_atendimento_display(self, obj):
         return ", ".join(obj.get_nomes_grupos_atendimento())
     grupos_atendimento_display.short_description = 'Grupos de Atendimento'
 
-    # Permitir que o admin mude a senha dos usuários
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        extra_context = extra_context or {}
-        extra_context['show_save_and_continue'] = False
-        return super(CustomUserAdmin, self).change_view(
-            request, object_id, form_url, extra_context=extra_context,
-        )
+    #Personalizando a url padrao do django admin
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -47,10 +41,12 @@ class CustomUserAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
+    #Rendereiza o html com o contexto populado
     def grafico_usuarios_view(self, request):
         context = self.get_user_aptitude_count()
         return render(request, 'grafico_pizza_usuario.html', context)
 
+    #Contador de usuarios aptos e inaptos
     def get_user_aptitude_count(self):
         aptos = CustomUser.objects.filter(is_apto_agendamento=True).count()
         inaptos = CustomUser.objects.filter(is_apto_agendamento=False).count()
