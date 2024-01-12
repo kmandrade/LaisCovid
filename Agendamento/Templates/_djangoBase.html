@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}
+{{ title }} | {{ site_title|default:_('Django site admin') }}
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+    #content-graphics {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content-graphics">
+    <a href="{% url 'admin:agendamento-graficos' %}" class="addlink">
+        Gráficos de Agendamentos
+    </a>
+    <a href="{% url 'admin:grafico-usuarios' %}" class="addlink">
+        Gráfico de Aptidão dos Usuários
+    </a>
+</div>
+{{ block.super }}
+{% endblock %}

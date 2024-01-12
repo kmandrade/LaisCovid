@@ -7,6 +7,9 @@ from .models import Estabelecimento, AgendamentoUsuario, Agendamento
 from datetime import datetime
 from django.utils import timezone
 from django.urls import reverse
+from django.http import JsonResponse
+from django.db.models import Sum
+from django.db.models import Min
 
 
 
@@ -54,6 +57,7 @@ def home(request):
         'estabelecimentos': estabelecimentos,
         'agendamentos_usuario': agendamentos,
         'tem_agendamento_ativo': tem_agendamento_ativo,
+        'is_apto_agendamento': usuario.is_apto_agendamento
     }
 
     if tem_agendamento_ativo:
@@ -105,6 +109,10 @@ def realizar_agendamento(request):
             defaults={'vagas_disponiveis': 5} 
         )
 
+        if agendamento.vagas_disponiveis > 5:
+            messages.error(request, "Limite de agendamentos excedido para este estabelecimento.")
+            return redirect(reverse('home'))
+        
         if agendamento.vagas_disponiveis > 0:
             AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True).update(is_active=False)
             AgendamentoUsuario.objects.create(agendamento=agendamento, usuario=usuario, is_active=True)
@@ -132,3 +140,18 @@ def logout_view(request):
     messages.add_message(request, messages.SUCCESS, 'Deslogado com sucesso')
     return redirect('login')
 
+@login_required(login_url="/auth/login/")
+def verificar_vagas(request, estabelecimento_id):
+    try:
+        estabelecimento = Estabelecimento.objects.get(id=estabelecimento_id)
+        resultado_agregacao = Agendamento.objects.filter(
+            estabelecimento=estabelecimento
+        ).aggregate(Min('vagas_disponiveis'))
+
+        vagas_disponiveis = resultado_agregacao['vagas_disponiveis__min']
+        if vagas_disponiveis is None:
+            vagas_disponiveis = 5
+
+        return JsonResponse({'vagas_disponiveis': vagas_disponiveis})
+    except Estabelecimento.DoesNotExist:
+        return JsonResponse({'error': 'Estabelecimento não encontrado'}, status=404)

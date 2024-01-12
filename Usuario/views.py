@@ -91,11 +91,14 @@ def cadastro(request):
         nao_tev_covid_ultimos_30_dias = not teve_covid
         grupos_nao_permitidos = ['População Privada de Liberdade', 'Pessoas Acamadas com mais de 80 anos',
                                  'Pessoas com Deficiência Institucionalizadas','Pessoas ACAMADAS de 80 anos ou mais']
+        
         #Percorre todos os nomes_grupos e caso exista um grupo em grupos_nao_permitidos retorna true
         pertence_grupo_nao_permitido = any(grupo in grupos_nao_permitidos for grupo in nomes_grupos)
-        is_apto = idade >= 18 and nao_tev_covid_ultimos_30_dias and not pertence_grupo_nao_permitido
         
+        is_inapto = teve_covid or pertence_grupo_nao_permitido
 
+        is_apto = idade >= 18 and not is_inapto
+        
         user = CustomUser.objects.create_user(
             cpf=cpf,
             nome_completo=nome_completo,
@@ -113,8 +116,13 @@ def cadastro(request):
                 print(f"Grupo de atendimento não encontrado: {nome_grupo}")
         
         user.grupos_atendimento.set(grupos_objs)
+        
+        if is_apto:
+            mensagem_status = 'Usuário cadastrado com sucesso e está apto para agendamentos.'
+        else:
+            mensagem_status = 'Usuário cadastrado com sucesso, mas não está apto para agendamentos.'
 
-        messages.success(request, 'Usuário cadastrado com sucesso')
+        messages.success(request, mensagem_status)
         return redirect('login')
     else:
         grupos_atendimento = buscar_grupos_atendimento()

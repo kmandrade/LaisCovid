@@ -35,6 +35,30 @@ document.addEventListener('DOMContentLoaded', function () {
             dropdown.value = ''; 
         }
     });
+    var dropdownEstabelecimento = document.getElementById('dropdownEstabelecimento');
+    var spanVagasDisponiveis = document.getElementById('vagasDisponiveis');
+
+    dropdownEstabelecimento.addEventListener('change', function() {
+        var estabelecimentoId = this.value;
+        if (estabelecimentoId) {
+            fetch(`/agendamento/verificar-vagas/${estabelecimentoId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar vagas');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    spanVagasDisponiveis.textContent = `Vagas disponíveis: ${data.vagas_disponiveis}`;
+                })
+                .catch(error => {
+                    console.error('Erro na requisição AJAX:', error);
+                    spanVagasDisponiveis.textContent = 'Erro ao buscar vagas';
+                });
+        } else {
+            spanVagasDisponiveis.textContent = 'Vagas disponíveis: ';
+        }
+    });
     
 });
     

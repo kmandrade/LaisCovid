@@ -24,15 +24,16 @@
         {% include '_lista_agendamento.html' %}
     </div>
     <br>
-    {% if tem_agendamento_ativo%}
-        <div id="realizarAgendamento" style="display:none;">
-            {% include '_realizar_agendamento.html' %}
-        </div>
-    {% else %}
-    <div id="realizarAgendamento" style="display:block;">
+    {% if tem_agendamento_ativo or not is_apto_agendamento %}
+    <div id="realizarAgendamento" style="display:none;">
         {% include '_realizar_agendamento.html' %}
     </div>
-    {%endif%}
+    {% else %}
+        <div id="realizarAgendamento" style="display:block;">
+            {% include '_realizar_agendamento.html' %}
+        </div>
+    {% endif %}
+
     
     <br>
     <br>
