@@ -28,7 +28,7 @@ class Agendamento(models.Model):
 class AgendamentoUsuario(models.Model):
     agendamento = models.ForeignKey(Agendamento, on_delete=models.CASCADE, verbose_name="Agendamento")
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="Usuário")
-    is_active = models.BooleanField(default=False, verbose_name='Agendamento Ativo')
+    is_active = models.BooleanField(default=True, verbose_name='Agendamento Ativo')
 
     def __str__(self):
         return f"Agendamento: {self.agendamento}, Usuário: {self.usuario}, Ativo: {self.is_active}"
@@ -44,5 +44,4 @@ class AgendamentoUsuario(models.Model):
         dias_semana = {0: 'Quarta-Feira', 1: 'Quinta-Feira', 2: 'Sexta-Feira', 3: 'Sábado', 4: 'Domingo'}
         return dias_semana[self.agendamento.data_agendamento.weekday()]
 
-    class Meta:
-        unique_together = ('usuario', 'is_active')
+    

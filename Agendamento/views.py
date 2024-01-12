@@ -71,8 +71,11 @@ def realizar_agendamento(request):
     usuario = request.user
     estabelecimentos = Estabelecimento.objects.all()
     
-    agendamento_encontrado = AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True)
-    if agendamento_encontrado:
+    agendamentos_ativos = AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True)
+    tem_agendamento_ativo_nao_expirado = any(
+    agendamento.status_agendamento != 'Expirado' for agendamento in agendamentos_ativos)
+
+    if tem_agendamento_ativo_nao_expirado:
         messages.error(request, "Você já possui um agendamento ativo.")
         return redirect('home')
 
@@ -94,7 +97,7 @@ def realizar_agendamento(request):
 
         dia_da_semana = data_agendamento.weekday()
 
-        if data_agendamento < timezone.now().date():
+        if data_agendamento <= timezone.now().date():
             messages.error(request, "Por favor, selecione uma data futura para o agendamento.")
             return redirect('home')
         
@@ -114,8 +117,14 @@ def realizar_agendamento(request):
             return redirect(reverse('home'))
         
         if agendamento.vagas_disponiveis > 0:
-            AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True).update(is_active=False)
-            AgendamentoUsuario.objects.create(agendamento=agendamento, usuario=usuario, is_active=True)
+            agendamentos_ativos = AgendamentoUsuario.objects.filter(usuario=usuario, is_active=True)
+            
+            for agendamento_usuario in agendamentos_ativos:
+                if agendamento_usuario.status_agendamento == 'Expirado':
+                    agendamento_usuario.is_active = False
+                    agendamento_usuario.save()
+           
+            novo_agendamento_usuario = AgendamentoUsuario.objects.create(agendamento=agendamento, usuario=usuario, is_active=True)
             agendamento.vagas_disponiveis -= 1
             agendamento.save()
             messages.success(request, "Agendamento realizado com sucesso.")
