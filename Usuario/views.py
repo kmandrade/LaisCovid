@@ -77,9 +77,6 @@ def cadastro(request):
             messages.error(request, 'A confirmação da senha não corresponde à senha inserida.')
             return redirect('cadastro')
 
-        if idade < 18:
-            messages.error(request, 'Usuário deve ser maior de 18 anos.')
-            return redirect('cadastro')
 
         try:
             nascimento = datetime.strptime(data_nascimento, '%d/%m/%Y').date()

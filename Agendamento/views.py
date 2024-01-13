@@ -61,7 +61,7 @@ def home(request):
     }
 
     if tem_agendamento_ativo:
-        messages.error(request, "Você já possui um agendamento ativo.")
+        messages.info(request, "Você já possui um agendamento ativo.")
 
     return render(request, 'home.html', context)
 
