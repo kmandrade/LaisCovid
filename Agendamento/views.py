@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.utils.dateparse import parse_date, parse_time
 from .models import Estabelecimento, AgendamentoUsuario, Agendamento
 from datetime import datetime
 from django.utils import timezone
@@ -150,17 +151,28 @@ def logout_view(request):
     return redirect('login')
 
 @login_required(login_url="/auth/login/")
-def verificar_vagas(request, estabelecimento_id):
+def verificar_vagas(request):
+    estabelecimento_id = request.GET.get('estabelecimento_id')
+    data_agendamento = request.GET.get('data_agendamento')
+    hora_agendamento = request.GET.get('hora_agendamento')
     try:
         estabelecimento = Estabelecimento.objects.get(id=estabelecimento_id)
-        resultado_agregacao = Agendamento.objects.filter(
-            estabelecimento=estabelecimento
-        ).aggregate(Min('vagas_disponiveis'))
+        data_agendamento = parse_date(data_agendamento) if data_agendamento else None
+        hora_agendamento = parse_time(hora_agendamento) if hora_agendamento else None
 
-        vagas_disponiveis = resultado_agregacao['vagas_disponiveis__min']
-        if vagas_disponiveis is None:
+        agendamento = Agendamento.objects.filter(
+            estabelecimento=estabelecimento,
+            data_agendamento=data_agendamento,
+            hora_agendamento=hora_agendamento
+        ).first()
+    
+        if agendamento:
+            vagas_disponiveis = agendamento.vagas_disponiveis
+        else:
             vagas_disponiveis = 5
 
         return JsonResponse({'vagas_disponiveis': vagas_disponiveis})
     except Estabelecimento.DoesNotExist:
         return JsonResponse({'error': 'Estabelecimento não encontrado'}, status=404)
+
+    

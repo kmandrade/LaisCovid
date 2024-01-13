@@ -36,12 +36,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     var dropdownEstabelecimento = document.getElementById('dropdownEstabelecimento');
+    var inputDataAgendamento = document.getElementById('data_agendamento');
+    var inputHoraAgendamento = document.getElementById('hora_agendamento');
     var spanVagasDisponiveis = document.getElementById('vagasDisponiveis');
 
-    dropdownEstabelecimento.addEventListener('change', function() {
-        var estabelecimentoId = this.value;
-        if (estabelecimentoId) {
-            fetch(`/agendamento/verificar-vagas/${estabelecimentoId}`)
+    inputDataAgendamento.addEventListener('change', verificarVagas);
+
+    function verificarVagas() {
+        var estabelecimentoId = dropdownEstabelecimento.value;
+        var dataAgendamento = inputDataAgendamento.value;
+        var horaAgendamento = inputHoraAgendamento.value;
+
+        if (estabelecimentoId && dataAgendamento) {
+            var url = `/agendamento/verificar-vagas?estabelecimento_id=${estabelecimentoId}&data_agendamento=${dataAgendamento}&hora_agendamento=${horaAgendamento}`;
+            fetch(url)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Erro ao buscar vagas');
@@ -52,13 +60,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     spanVagasDisponiveis.textContent = `Vagas disponíveis: ${data.vagas_disponiveis}`;
                 })
                 .catch(error => {
-                    console.error('Erro na requisição AJAX:', error);
-                    spanVagasDisponiveis.textContent = 'Erro ao buscar vagas';
+                    console.error('Erro na requisição', error);
                 });
         } else {
             spanVagasDisponiveis.textContent = 'Vagas disponíveis: ';
         }
-    });
+    }
     
 });
     
